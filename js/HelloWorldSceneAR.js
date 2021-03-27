@@ -15,6 +15,10 @@ import {
   ViroAnimations,
 } from 'react-viro';
 var createReactClass = require('create-react-class');
+
+const helloMessage = "Hello World!";
+const congratulationsMessage = "Congratulations, you have now ViroReact set up and running!";
+
 var HelloWorldSceneAR = createReactClass({
   getInitialState() {
     return {
@@ -24,8 +28,9 @@ var HelloWorldSceneAR = createReactClass({
 
   render: function() {
     return (
-      <ViroARScene onTrackingInitialized={()=>{this.setState({text : "Hello World!"})}}>
-        <ViroText text={this.state.text} scale={[.1, .1, .1]} height={1} width={4} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
+      <ViroARScene onTrackingUpdated={()=>{this.setState({text : 
+        congratulationsMessage})}}>
+        <ViroText text={this.state.text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
         <ViroAmbientLight color={"#aaaaaa"} />
         <ViroSpotLight innerAngle={5} outerAngle={90} direction={[0,-1,-.2]} position={[0, 3, 1]} color="#ffffff" castsShadow={true} />
