@@ -29,7 +29,7 @@ var HelloWorldSceneAR = createReactClass({
   render: function() {
     return (
       <ViroARScene onTrackingUpdated={()=>{this.setState({text : 
-        congratulationsMessage})}}>
+        helloMessage})}}>
         <ViroText text={this.state.text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
         <ViroAmbientLight color={"#aaaaaa"} />
