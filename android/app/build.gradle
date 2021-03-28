@@ -102,7 +102,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.virosample02"
+        applicationId "com.vladsobjects"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

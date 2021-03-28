@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import {StyleSheet} from 'react-native';
 import {
   ViroARScene,
@@ -19,34 +19,45 @@ var createReactClass = require('create-react-class');
 const helloMessage = "Hello World!";
 const congratulationsMessage = "Congratulations, you have now ViroReact set up and running!";
 
-var HelloWorldSceneAR = createReactClass({
-  getInitialState() {
-    return {
-      text : "Initializing AR..."
-    };
-  },
+// setInitialState("");
 
-  render: function() {
-    return (
-      <ViroARScene onTrackingUpdated={()=>{this.setState({text : 
-        helloMessage})}}>
-        <ViroText text={this.state.text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
+var HelloWorldSceneAR = () => {
+  
+  // setInitialState( { text : "Initializing AR..." });
 
-        <ViroAmbientLight color={"#aaaaaa"} />
-        <ViroSpotLight innerAngle={5} outerAngle={90} direction={[0,-1,-.2]} position={[0, 3, 1]} color="#ffffff" castsShadow={true} />
+  const [text, setText] = useState("Initializing AR...");
 
-          <Viro3DObject
-            source={require('./res/emoji_smile/emoji_smile.vrx')}
-            position={[0, 0, -1]}
-            scale={[.2, .2, .2]}
-            type="VRX"
-            dragType="FixedDistance" onDrag={()=>{}}
-          />
+  return (<ViroARScene></ViroARScene>);
+  /*
+  return (
+    <ViroARScene displayPointCloud={true} onTrackingUpdated={()=>{setText(helloMessage)}}>
+      <ViroText text={text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
-      </ViroARScene>
-    );
-  },
-});
+      <ViroAmbientLight color={"#aaaaaa"} />
+      <ViroSpotLight innerAngle={5} outerAngle={90} direction={[0,-1,-.2]} position={[0, 3, 1]} color="#ffffff" castsShadow={true} />
+
+        <Viro3DObject
+          source={require('./res/emoji_smile/emoji_smile.vrx')}
+          position={[0, 0, -1]}
+          scale={[.2, .2, .2]}
+          type="VRX"
+          dragType="FixedDistance" onDrag={()=>{}}
+        />
+
+    </ViroARScene>
+  );
+*/
+};
+
+//HelloWorldSceneAR.ini
+
+function HelloWorld() {
+
+  setInitialState("");
+
+  return "";
+}
+// HelloWorld.setInitialState
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {

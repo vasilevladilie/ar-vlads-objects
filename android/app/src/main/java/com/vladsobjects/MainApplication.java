@@ -1,4 +1,4 @@
-package com.virosample02;
+package com.vladsobjects;
 
 import android.app.Application;
 
