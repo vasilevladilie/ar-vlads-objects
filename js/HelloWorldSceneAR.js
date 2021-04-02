@@ -1,36 +1,26 @@
 'use strict';
 
-import React, { Component, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {StyleSheet} from 'react-native';
 import {
   ViroARScene,
   ViroText,
-  ViroMaterials,
-  ViroBox,
   Viro3DObject,
   ViroAmbientLight,
   ViroSpotLight,
-  ViroARPlaneSelector,
-  ViroNode,
-  ViroAnimations,
 } from 'react-viro';
-var createReactClass = require('create-react-class');
 
 const helloMessage = "Hello World!";
-const congratulationsMessage = "Congratulations, you have now ViroReact set up and running!";
-
-// setInitialState("");
-
-var HelloWorldSceneAR = () => {
+module.exports = () => {
   
-  // setInitialState( { text : "Initializing AR..." });
-
   const [text, setText] = useState("Initializing AR...");
 
-  return (<ViroARScene></ViroARScene>);
-  /*
+  useEffect(()=>{
+    console.log("Hello World!");
+  }, [text])
+  
   return (
-    <ViroARScene displayPointCloud={true} onTrackingUpdated={()=>{setText(helloMessage)}}>
+    <ViroARScene displayPointCloud={false} onTrackingUpdated={()=>{setText(helloMessage)}}>
       <ViroText text={text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
       <ViroAmbientLight color={"#aaaaaa"} />
@@ -46,18 +36,7 @@ var HelloWorldSceneAR = () => {
 
     </ViroARScene>
   );
-*/
 };
-
-//HelloWorldSceneAR.ini
-
-function HelloWorld() {
-
-  setInitialState("");
-
-  return "";
-}
-// HelloWorld.setInitialState
 
 var styles = StyleSheet.create({
   helloWorldTextStyle: {
@@ -68,5 +47,3 @@ var styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-module.exports = HelloWorldSceneAR;

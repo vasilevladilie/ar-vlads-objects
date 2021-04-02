@@ -101,6 +101,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    productFlavor {
+        ar {
+            resValue 'string', 'app_name', 'VladsObjects'
+            buildConfigField 'String', 'AR_PLATFORM', '"AR"'
+        }
+    }
+
     defaultConfig {
         applicationId "com.vladsobjects"
         minSdkVersion rootProject.ext.minSdkVersion
