@@ -12,13 +12,11 @@
  * notices must be preserved. Contributors provide an express grant of patent rights.
  */
 
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  AppRegistry,
   Text,
   View,
   StyleSheet,
-  PixelRatio,
   TouchableHighlight,
 } from 'react-native';
 
@@ -94,7 +92,7 @@ module.exports = () => {
   */
   function _getARVladsObjectsNavigator() {
     return (
-      <ViroARSceneNavigator initialScene={{scene: InitialARScene}} />
+      <ViroARSceneNavigator initialScene={{scene: InitialARVladsObjectsScene}} />
     );
   }
 
