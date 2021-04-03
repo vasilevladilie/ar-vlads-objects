@@ -19,8 +19,7 @@ module.exports = () => {
     console.log("Hello World!");
   }, [text])
   
-  return (
-    <ViroARScene displayPointCloud={false} onTrackingUpdated={()=>{setText(helloMessage)}}>
+  return <ViroARScene displayPointCloud={false} onTrackingUpdated={()=>{setText(helloMessage)}}>
       <ViroText text={text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
       <ViroAmbientLight color={"#aaaaaa"} />
@@ -33,9 +32,7 @@ module.exports = () => {
           type="VRX"
           dragType="FixedDistance" onDrag={()=>{}}
         />
-
     </ViroARScene>
-  );
 };
 
 var styles = StyleSheet.create({
