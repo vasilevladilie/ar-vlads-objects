@@ -22,25 +22,32 @@ module.exports = () => {
     console.log("Hello World!");
   }, [text])
   
-  return <ViroARScene gravity={1.0} displayPointCloud={false} onTrackingUpdated={()=>{setText(helloMessage)}}>
+  return <ViroARScene physicsWorld={{ gravity:[0,-9.81,0],
+   drawBounds: true }}
+    displayPointCloud={false}
+     onTrackingUpdated={
+       ()=>{setText(helloMessage)}
+    }
+     >
       <ViroText text={text} scale={[.1, .1, .1]} height={1} width={14} position={[0, .5, -1]} style={styles.helloWorldTextStyle} />
 
       <ViroAmbientLight color={"#aaaaaa"} />
       <ViroSpotLight innerAngle={5} outerAngle={90} direction={[0,-1,-.2]} position={[0, 3, 1]} color="#ffffff" castsShadow={true} />
-
       <ViroARPlane viroTag="plane1" minHeight={.2} minWidth={.2} alignment={"Horizontal"} >
+
         <ViroBox viroTag="box1" 
         position={[.2, .25, -1]} 
         scale={[.5, .5, .5]} 
         physicsBody={{
-          type:'Dynamic',
-          max:10,
+          type:'Static',
+          mass:0,
           force:{value:[0,0,1]},
-          torque:[0,30,0]
+          torque:[0,30,0],
+          onCollision:(collidedTag, collidedPoint, collidedNormal)=>{
+            console.log("Viro AR Plane collided "+collidedTag + " " + collidedPoint + " "+collidedNormal);
+          }
       }}
-      onCollision={ (collidedTag, collidedPoint, collidedNormal)=>{
-        console.log("Viro AR Plane collided "+collidedTag + " " + collidedPoint + " "+collidedNormal);
-      }}/>
+     />
       </ViroARPlane>
 
       <ViroNode viroTag="node1" position={[0,0,-1]} dragType="FixedDistance" onDrag={()=>{}} onCollision={(collidedTag, collidedPoint, collidedNormal)=>{

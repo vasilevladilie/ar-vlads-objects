@@ -28,12 +28,14 @@ import {
 // Sets the default scene you want for AR and VR
 var InitialARScene = require('./js/HelloWorldSceneAR');
 var InitialARVladsObjectsScene = require('./js/VladsObjectsSceneAR');
+var InitialARPhysicsSampleScene = require('./js/ARPhysicsSample/BasicPhysicsSample.js');
 var InitialVRScene = require('./js/HelloWorldScene');
 
 var UNSET = "UNSET";
 var VR_NAVIGATOR_TYPE = "VR";
 var AR_HELLO_WORLD_NAVIGATOR_TYPE = "AR-Hello-World!";
 var AR_VLADS_OBJECTS_NAVIGATOR_TYPE = "AR-Vlads-Objects!";
+var AR_PHYSICS_SAMPLE_TYPE = "AR-Physics-Sample!";
 
 // This determines which type of experience to launch in, or UNSET, if the user should
 // be presented with a choice of AR or VR. By default, we offer the user a choice.
@@ -59,6 +61,13 @@ module.exports = () => {
             underlayColor={'#68a0ff'} >
 
             <Text style={localStyles.buttonText}>{AR_VLADS_OBJECTS_NAVIGATOR_TYPE}</Text>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={localStyles.buttons}
+            onPress={_getExperienceButtonOnPress(AR_PHYSICS_SAMPLE_TYPE)}
+            underlayColor={'#68a0ff'} >
+
+            <Text style={localStyles.buttonText}>{AR_PHYSICS_SAMPLE_TYPE}</Text>
           </TouchableHighlight>
 
           <TouchableHighlight style={localStyles.buttons}
@@ -96,6 +105,12 @@ module.exports = () => {
     );
   }
 
+  function _getARPhysicsSampleNavigator() {
+    return (
+      <ViroARSceneNavigator initialScene={{scene: InitialARPhysicsSampleScene}} />
+    );
+  }
+
   // Returns the ViroSceneNavigator which will start the VR experience
   function _getVRNavigator() {
     return (
@@ -123,7 +138,9 @@ module.exports = () => {
   } else if (navigatorType == AR_HELLO_WORLD_NAVIGATOR_TYPE) {
     return _getHelloWorldARNavigator();
   } else if (navigatorType == AR_VLADS_OBJECTS_NAVIGATOR_TYPE) {
-    return _getARVladsObjectsNavigator();
+    return _getARVladsObjectsNavigator(); // InitialARPhysicsSampleScene
+  } else if (navigatorType == AR_PHYSICS_SAMPLE_TYPE) {
+    return _getARPhysicsSampleNavigator();
   }
 }
 
