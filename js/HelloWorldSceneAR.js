@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {StyleSheet} from 'react-native';
 import {
   ViroARScene,
@@ -11,12 +11,15 @@ import {
   ViroNode,
   ViroARPlane,
   ViroBox,
+  ViroController,
 } from 'react-viro';
 
 const helloMessage = "Hello World!";
 module.exports = () => {
   
   const [text, setText] = useState("Initializing AR...");
+
+  const controllerRef = useRef(null);
 
   useEffect(()=>{
     console.log("Hello World!");
@@ -33,7 +36,16 @@ module.exports = () => {
 
       <ViroAmbientLight color={"#aaaaaa"} />
       <ViroSpotLight innerAngle={5} outerAngle={90} direction={[0,-1,-.2]} position={[0, 3, 1]} color="#ffffff" castsShadow={true} />
+
       <ViroARPlane viroTag="plane1" minHeight={.2} minWidth={.2} alignment={"Horizontal"} >
+
+        {/* Bind controls for interacting with the scene.*/}
+        <ViroController reticleVisibility={true}
+        controllerVisibility={true}
+        ref={controllerRef}
+        onClick={() => {console.log("Controller got clicked")}}
+        onCollision={() => {console.log("Collision with the controller")}}
+        />
 
         <ViroBox viroTag="box1" 
         position={[.2, .25, -1]} 
@@ -50,7 +62,7 @@ module.exports = () => {
      />
       </ViroARPlane>
 
-      <ViroNode viroTag="node1" position={[0,0,-1]} dragType="FixedDistance" onDrag={()=>{}} onCollision={(collidedTag, collidedPoint, collidedNormal)=>{
+      <ViroNode viroTag="node1" position={[0,0,-1]} dragType="FixedDistance" onDrag={()=>{console.log("dragged");}} onCollision={(collidedTag, collidedPoint, collidedNormal)=>{
           console.log("Viro Box collided "+collidedTag + " " + collidedPoint + " "+collidedNormal);
         }}>
         <Viro3DObject viroTag="object1" 

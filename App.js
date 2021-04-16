@@ -27,7 +27,7 @@ import {
 
 // Sets the default scene you want for AR and VR
 var InitialARScene = require('./js/HelloWorldSceneAR');
-var InitialARVladsObjectsScene = require('./js/VladsObjectsSceneAR');
+var VladsObjectsSceneAR = require('./js/VladsObjectsSceneAR');
 var InitialARPhysicsSampleScene = require('./js/ARPhysicsSample/BasicPhysicsSample.js');
 var InitialVRScene = require('./js/HelloWorldScene');
 
@@ -101,7 +101,7 @@ module.exports = () => {
   */
   function _getARVladsObjectsNavigator() {
     return (
-      <ViroARSceneNavigator initialScene={{scene: InitialARVladsObjectsScene}} />
+      <ViroARSceneNavigator initialScene={{scene: VladsObjectsSceneAR}} />
     );
   }
 
