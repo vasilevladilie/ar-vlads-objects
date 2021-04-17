@@ -1,3 +1,18 @@
+/**
+ * Copyright 2021 Vlad Ilie
+ * 
+ * This project module creates a new AR scene, the scene contains:
+ *  - a colored flat horizontal plane that is detected once and displayed fixed
+ *  - a basketball loaded as a vrx file that is able to collide with the horizontal plane and has two operations:
+ *      - push from user controller - touch screen
+ *      - pull towards camera - on idle pull is pushed towards camera
+ * 
+ * Licensed under GNU General Public License v3.0
+ *  Permissions of this strong copyleft license are conditioned on making available
+ * complete source code of licensed works and modifications, which include larger
+ * works using a licensed work, under the same license. Copyright and license
+ * notices must be preserved. Contributors provide an express grant of patent rights.
+ */
 'use strict';
 
 import React, {useRef, useState} from 'react';
@@ -13,9 +28,18 @@ const { ViroARScene,
         ViroController,
         ViroQuad } = require("react-viro");
 
+/*
+ * \brief This project module is implemented as a react native
+*   functional component that uses hooks to control and store the state.
+*   The module is exported directly the app can choose what name to display when starting it.
+ */
+
 module.exports = () => {
 
 
+    /**
+     * \brief Materials that are used by the ground horizontal plane and by the text.
+     */
     ViroMaterials.createMaterials({
 
         ground1: {
@@ -35,6 +59,10 @@ module.exports = () => {
         }
     });
 
+
+    /**
+     * \brief CSS type of style sheet specifications that are used by the rendered text that displays the project name and discipline.
+     */
     var textStyles = StyleSheet.create({
 
         projectDisciplineStyle:{
@@ -68,8 +96,8 @@ module.exports = () => {
 
     var groundState = false;
 
-    const projectDiscipline = "Inteligenta Ambientala si Realitate Augmentata";
-    const projectName = "O minge pe o suprafata plana detectata";
+    const projectDiscipline = "Master, Disciplina: Inteligenta Ambientala si Realitate Augmentata";
+    const projectName = "Proiect: O minge pe o suprafata plana detectata";
 
     function _onLoadStart() {
         console.log("OBJ loading has started");
@@ -152,9 +180,13 @@ module.exports = () => {
         return null;
     }
 
+    /**
+     * \brief This method provides collision awarness, handling the collision
+     * by toggling the material state of the floor surface.
+     *
+    */
     function onFloorCollision(viroTag, collidedPoint, collidedNormal) {
 
-        console.log("viro tag " + viroTag);
         if (viroTag == "Surface") {
             if (groundState) {
                 floorSurfaceRef.setNativeProps({materials:["ground2"]});
@@ -164,14 +196,12 @@ module.exports = () => {
             }
 
             groundState = !groundState;
-            
-            /*
-        setTimeout(() => {
-        floorSurfaceRef.setNativeProps({materials:['ground']});
-        }, 10000);*/
         }
     }
 
+    /**
+     * \brief The properties of the first horizontal plane that is detected are saved and the plane detector gets paused from updates.
+     */
     function lockDetectedPlane(anchorMap) {
         if (anchorMap.type != "plane")
             return;
@@ -191,10 +221,14 @@ module.exports = () => {
         }
 
     return (<ViroARScene physicsWorld={{gravity:[0, -9.81, 0], drawBounds:false}} ref={(component) => {arSceneRef = component}}>
-                {/* I.a. Scene lighting */}
+                {/* I. Scene lighting */}
                 <ViroAmbientLight color={"#0000FF"} intensity={10} temperature={6500}/>
                 <ViroLightingEnvironment source={require('./res/lighting/ibl_mans_outside.hdr')}/>
 
+                {/*
+                * II. Text that presents the topic of the application inside the augmented world:
+                *    the project title and the discipline that supports the project.
+                */}
                 <ViroNode position={[2.0, 5.0, -2.0]}
                     rotation={[0, 45, 45]}
                     scale={[2.0, 2.0, 2.0]}
@@ -216,23 +250,34 @@ module.exports = () => {
                         position={[0,0,-5]}/>
                 </ViroNode>
                 
-                {/* I.b World plane */}
+                {/* III. World plane that has a horizontal plane detector embedded, first plane detected
+                * gets fixed and is displayed as solid ground capable of collisions
+                * and support for world physics and positive mass objects interactions in a world with gravity enabled.
+                */}
                 <ViroARPlane ref={(component)=>{firstDetectedPlaneRef = component}}
                     key={"LockedToFirstDetectedPlane"}
                     onAnchorFound={lockDetectedPlane}
                 >
-                    {/* II. AR scene node */}
+                    {/* IV. AR scene node placed where the horizontal plane has been dectected by previous component Viro AR Plane*/}
                     <ViroNode position={planeData.planePosition}>
 
-                        {/* III. AR node controller for actions */}
-                        {/* Bind controls for interacting with the scene.*/}
+                        {/* V. AR node controller for actions
+                        * Bind controls for interacting with the scene, in this implementation actually
+                        * the controller transform is used when interacting with the ball on push operation.
+                        */}
                         <ViroController reticleVisibility={true}
                             controllerVisibility={true}
                             ref={(component)=>{controllerRef = component}}
                             onClick={() => {}}
                         />
 
-                        {/* IV. AR basketball 3D object */}
+                        {/* VI. AR basketball 3D object. Loaded from a VRX model for Virtual Reality Extended rendering.
+                        * This works as a solution for Physically Based Rendering inside Viro Media applications.
+                        * VRX is originally FBX, that is an expansive and flexible 3D model format supported by most 3D authoring software.
+                        * To load FBX files, use the ViroFBX script to convert the FBX file into a VRX file, ViroFBX script works only on MacOS :-D.
+                        * The 3D model has some png resources that are used as mesh materials. The world lighting together with the model
+                        * geometry specification and the mesh materials render the object 3D, this time the object is a basketball.
+                        */}
                         <Viro3DObject ref={(component)=>{ballRef = component}}
                             source={require("./res/basketball/object_basketball_pbr.vrx")}
                             position={[0, 0, -1]}
@@ -267,7 +312,14 @@ module.exports = () => {
                             onClick={pushImpulseCallback("basketball")}
                         />
 
-                        {/* V. AR surface used as ground */}
+                        {/* VII. AR surface used as ground. This component is very important for the world interaction:
+                        *    - it creates a thin horizontal plane where the AR plane detector first detects an horizontal plane;
+                        *   - the plane enables object AR world collision, interactions and state detection;
+                        *   The rendered plane has an on click state handler that uses the transform
+                        *   (position and state) of the camera and the transform of the basketball to pull the basketball
+                        *   towards the camera on user interaction with the plane such that the ball will be seen rolling towards the camera.
+                        *   If the basketball falls of this plane is lost: can be seen sinking into the beneath abyss :-D.
+                        */}
                         <ViroQuad position={[0,0,0]}
                             scale={[6.0, 8.0, 1.0]}
                             rotation={[-90, 0, 0]}

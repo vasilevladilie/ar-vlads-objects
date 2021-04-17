@@ -27,9 +27,10 @@ import {
 
 // Sets the default scene you want for AR and VR
 var InitialARScene = require('./js/HelloWorldSceneAR');
-var VladsObjectsSceneAR = require('./js/VladsObjectsSceneAR');
-var InitialARPhysicsSampleScene = require('./js/ARPhysicsSample/BasicPhysicsSample.js');
 var InitialVRScene = require('./js/HelloWorldScene');
+
+// Project Work Scene
+var VladsObjectsSceneAR = require('./js/VladsObjectsSceneAR');
 
 var UNSET = "UNSET";
 var VR_NAVIGATOR_TYPE = "VR";
@@ -64,13 +65,6 @@ module.exports = () => {
           </TouchableHighlight>
 
           <TouchableHighlight style={localStyles.buttons}
-            onPress={_getExperienceButtonOnPress(AR_PHYSICS_SAMPLE_TYPE)}
-            underlayColor={'#68a0ff'} >
-
-            <Text style={localStyles.buttonText}>{AR_PHYSICS_SAMPLE_TYPE}</Text>
-          </TouchableHighlight>
-
-          <TouchableHighlight style={localStyles.buttons}
             onPress={_getExperienceButtonOnPress(AR_HELLO_WORLD_NAVIGATOR_TYPE)}
             underlayColor={'#68a0ff'} >
 
@@ -101,13 +95,7 @@ module.exports = () => {
   */
   function _getARVladsObjectsNavigator() {
     return (
-      <ViroARSceneNavigator initialScene={{scene: VladsObjectsSceneAR}} />
-    );
-  }
-
-  function _getARPhysicsSampleNavigator() {
-    return (
-      <ViroARSceneNavigator initialScene={{scene: InitialARPhysicsSampleScene}} />
+      <ViroARSceneNavigator pbrEnabled={true} initialScene={{scene: VladsObjectsSceneAR}} />
     );
   }
 
@@ -138,9 +126,7 @@ module.exports = () => {
   } else if (navigatorType == AR_HELLO_WORLD_NAVIGATOR_TYPE) {
     return _getHelloWorldARNavigator();
   } else if (navigatorType == AR_VLADS_OBJECTS_NAVIGATOR_TYPE) {
-    return _getARVladsObjectsNavigator(); // InitialARPhysicsSampleScene
-  } else if (navigatorType == AR_PHYSICS_SAMPLE_TYPE) {
-    return _getARPhysicsSampleNavigator();
+    return _getARVladsObjectsNavigator();
   }
 }
 
