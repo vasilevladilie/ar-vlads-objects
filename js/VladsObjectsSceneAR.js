@@ -2,17 +2,26 @@
 
 import React, {useRef, useState} from 'react';
 import {StyleSheet} from 'react-native';
-const { ViroARScene, Viro3DObject, ViroARPlane, ViroAmbientLight, ViroMaterials, ViroText } = require("react-viro");
+const { ViroARScene,
+        Viro3DObject,
+        ViroARPlane,
+        ViroAmbientLight,
+        ViroLightingEnvironment,
+        ViroMaterials,
+        ViroText,
+        ViroNode,
+        ViroController,
+        ViroQuad } = require("react-viro");
 
 module.exports = () => {
 
 
     ViroMaterials.createMaterials({
 
-        ground: {
+        ground1: {
             diffuseColor:"#61270e"
         },
-        groundHit:{
+        ground2:{
             diffuseColor:"#85190b"
         },
         textFrontMaterial:{
@@ -47,15 +56,17 @@ module.exports = () => {
 
     const [planeData, setPlaneData] = useState({foundPlane:false, planePosition:[0, 0, 0], planeRotation:[0, 0, 0]});
 
-    const [controllerRef] = useRef(null);
+    var controllerRef = useRef(null);
 
-    const [ballRef] = useRef(null);
+    var ballRef = useRef(null);
 
-    const [arSceneRef] = useRef(null);
+    var arSceneRef = useRef(null);
     
-    const [firstDetectedPlaneRef] = useRef(null);
+    var firstDetectedPlaneRef = useRef(null);
 
-    const [floorSurfaceRef] = useRef(null);
+    var floorSurfaceRef = useRef(null);
+
+    var groundState = false;
 
     const projectDiscipline = "Inteligenta Ambientala si Realitate Augmentata";
     const projectName = "O minge pe o suprafata plana detectata";
@@ -99,9 +110,9 @@ module.exports = () => {
     */
     function pullForceCallback(itemTag) {
 
-        if (ballRef != null && sceneRef != null) {
+        if (ballRef != null && arSceneRef != null) {
             return (state, position, source) => {
-                sceneRef.getCameraOrientationAsync().then((camTransform) => {
+                arSceneRef.getCameraOrientationAsync().then((camTransform) => {
                     ballRef.getTransformAsync().then((ballTransform) => {
                         var ballPos = ballTransform.position;
                         var camPos = camTransform.position;
@@ -143,15 +154,43 @@ module.exports = () => {
 
     function onFloorCollision(viroTag, collidedPoint, collidedNormal) {
 
+        console.log("viro tag " + viroTag);
         if (viroTag == "Surface") {
-            floorSurfaceRef.setNativeProps({materials:['groundHit']});
-            setTimeout(() => {
-                    floorSurfaceRef.setNativeProps({materials:['ground']});
-            }, 1000);
+            if (groundState) {
+                floorSurfaceRef.setNativeProps({materials:["ground2"]});
+            }
+            else {
+                floorSurfaceRef.setNativeProps({materials:["ground1"]});
+            }
+
+            groundState = !groundState;
+            
+            /*
+        setTimeout(() => {
+        floorSurfaceRef.setNativeProps({materials:['ground']});
+        }, 10000);*/
         }
     }
 
-    return (<ViroARScene physicsWorld={{gravity:[0, -9.81, 0], drawBounds:true}} ref={arSceneRef}>
+    function lockDetectedPlane(anchorMap) {
+        if (anchorMap.type != "plane")
+            return;
+
+        firstDetectedPlaneRef.setNativeProps({"pauseUpdates":true});
+        var worldCenterPosition = [
+            anchorMap.position[0] + anchorMap.center[0],
+            anchorMap.position[1] + anchorMap.center[1],
+            anchorMap.position[2] + anchorMap.center[2]
+        ];
+
+        setPlaneData({
+            foundPlane:true,
+            planePosition:worldCenterPosition,
+            planeRotation:anchorMap.rotation}
+            );
+        }
+
+    return (<ViroARScene physicsWorld={{gravity:[0, -9.81, 0], drawBounds:false}} ref={(component) => {arSceneRef = component}}>
                 {/* I.a. Scene lighting */}
                 <ViroAmbientLight color={"#0000FF"} intensity={10} temperature={6500}/>
                 <ViroLightingEnvironment source={require('./res/lighting/ibl_mans_outside.hdr')}/>
@@ -163,37 +202,24 @@ module.exports = () => {
 
                     <ViroText text={projectDiscipline}
                         style={textStyles.projectDisciplineStyle}
-                        textLineBreakMode={"justify"}
-                        textClipMode={"clipToBounds"}
+                        textLineBreakMode={"Justify"}
+                        textClipMode={"ClipToBounds"}
                         width={2}
                         height={2}
                         position={[0,-2,-5]}/>
                     <ViroText text={projectName}
                         style={textStyles.projectNameStyle}
-                        textLineBreakMode={"justify"}
-                        textClipMode={"clipToBounds"}
+                        textLineBreakMode={"Justify"}
+                        textClipMode={"ClipToBounds"}
                         width={2}
                         height={2}
                         position={[0,0,-5]}/>
                 </ViroNode>
                 
                 {/* I.b World plane */}
-                <ViroARPlane key={"LockedToFirstDetectedPlane"}
-                    ref={firstDetectedPlaneRef}
-                    onAnchorFound={(anchorMap) => {
-                        if (anchorMap.type != "plane")
-                            return;
-
-                        firstDetectedPlaneRef.setNativeProps({"pauseUpdates":true});
-                        var worldCenterPosition = [anchorMap.position[0] + anchorMap.center[0],
-                        anchorMap.position[1] + anchorMap.center[1],
-                        anchorMap.position[2] + anchorMap.center[2]];
-
-                        setPlaneData({foundPlane:true,
-                            planePosition:worldCenterPosition,
-                            planeRotation:anchorMap.rotation});
-
-                    }}
+                <ViroARPlane ref={(component)=>{firstDetectedPlaneRef = component}}
+                    key={"LockedToFirstDetectedPlane"}
+                    onAnchorFound={lockDetectedPlane}
                 >
                     {/* II. AR scene node */}
                     <ViroNode position={planeData.planePosition}>
@@ -202,12 +228,12 @@ module.exports = () => {
                         {/* Bind controls for interacting with the scene.*/}
                         <ViroController reticleVisibility={true}
                             controllerVisibility={true}
-                            ref={controllerRef}
+                            ref={(component)=>{controllerRef = component}}
                             onClick={() => {}}
                         />
 
                         {/* IV. AR basketball 3D object */}
-                        <Viro3DObject ref={ballRef}
+                        <Viro3DObject ref={(component)=>{ballRef = component}}
                             source={require("./res/basketball/object_basketball_pbr.vrx")}
                             position={[0, 0, -1]}
                             scale={[.2, .2, .2]}
@@ -228,6 +254,7 @@ module.exports = () => {
                                 mass: 4,
                                 enabled: true,
                                 useGravity: true,
+                                viroTag:"basketball",
                                 shape:{type:'Sphere', params:[0.14]},
                                 restitution:0.65                    
                             }}
@@ -244,12 +271,12 @@ module.exports = () => {
                         <ViroQuad position={[0,0,0]}
                             scale={[6.0, 8.0, 1.0]}
                             rotation={[-90, 0, 0]}
-                            physicsBody={{ type:'Static', restitution:0.75 }}
+                            physicsBody={{ type:'Static', enabled:true, restitution:0.75, viroTag:"Surface"}}
                             viroTag="Surface"
                             onClickState={pullForceCallback("Surface")}
-                            ref={floorSurfaceRef}
-                            onCollision={onFloorCollision}
-                            materials={'ground'}
+                            ref={(component)=>{floorSurfaceRef = component}}
+                            onCollision={(viroTag, collidedPoint, collidedNormal)=>{onFloorCollision("Surface", collidedPoint, collidedNormal)}}
+                            materials={'ground1'}
                          />
                     </ViroNode>
                 </ViroARPlane>
